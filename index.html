@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>韩涛的体重记录</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>韩涛的体重记录</h1>
+    </header>
+
+    <main>
+        <section id="weight-input">
+            <h2>记录体重</h2>
+            <form id="weight-form">
+                <input type="number" id="weight" step="0.1" min="0" max="500" placeholder="输入" required>
+                <input type="date" id="date" required>
+                <button type="submit" id="record-weight">记录体重</button>
+            </form>
+            <p class="form-hint">请输入您的体重（单位：公斤，精确到小数点后一位），并选择日期。</p>
+        </section>
+
+        <section id="weight-chart">
+            <h2>体重变化趋势</h2>
+            <canvas id="weightChart"></canvas>
+            <p class="chart-hint">此图表显示了您的体重变化趋势。点击数据点可查看详细信息。</p>
+        </section>
+
+        <section id="weight-table">
+            <h2>体重记录列表</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>体重（公斤）</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="weight-data">
+                    <!-- 体重数据将通过JavaScript动态添加 -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 我的体重追踪器。保留所有权利。</p>
+        <nav>
+            <a href="#">隐私政策</a> | 
+            <a href="#">联系我们</a>
+        </nav>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
