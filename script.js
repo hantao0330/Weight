@@ -5,24 +5,48 @@ const weightChart = new Chart(ctx, {
     data: {
         labels: [],
         datasets: [{
-            label: '体重（公斤）',
+            label: '体重（Kg）',
             data: [],
             borderColor: 'rgb(70, 130, 180)',
-            backgroundColor: 'rgba(70, 130, 180, 0.1)',
-            tension: 0.1,
-            fill: true
+            backgroundColor: (context) => {
+                const chart = context.chart;
+                const {ctx, chartArea} = chart;
+                if (!chartArea) {
+                    return null;
+                }
+                const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                gradient.addColorStop(0, 'rgba(135, 206, 235, 0)');  // 天空蓝色，完全透明
+                gradient.addColorStop(1, 'rgba(135, 206, 235, 0.05)');  // 天空蓝色，5%不透明度
+                return gradient;
+            },
+            tension: 0.4,
+            fill: true,
+            pointBackgroundColor: 'white',
+            pointBorderColor: 'rgb(70, 130, 180)',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7
         }]
     },
     options: {
         responsive: true,
         plugins: {
             legend: {
-                display: false // 隐藏图例
+                display: false
             },
             tooltip: {
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                titleFont: {
+                    size: 14,
+                    weight: 'bold'
+                },
+                bodyFont: {
+                    size: 14
+                },
+                padding: 10,
                 callbacks: {
                     label: function(context) {
-                        return `体重: ${context.parsed.y} 公斤`;
+                        return `体重: ${context.parsed.y.toFixed(1)} Kg`;
                     }
                 }
             }
@@ -32,13 +56,31 @@ const weightChart = new Chart(ctx, {
                 beginAtZero: false,
                 title: {
                     display: true,
-                    text: '体重（公斤）'
+                    text: '体重（Kg）',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    }
+                },
+                ticks: {
+                    font: {
+                        size: 12
+                    }
                 }
             },
             x: {
                 title: {
                     display: true,
-                    text: '日期'
+                    text: '日期',
+                    font: {
+                        size: 14,
+                        weight: 'bold'
+                    }
+                },
+                ticks: {
+                    font: {
+                        size: 12
+                    }
                 }
             }
         }
@@ -76,7 +118,7 @@ function addWeight(event) {
         return;
     }
 
-    weights.push({ date, weight });
+    weights.push({ date, weight: parseFloat(weight.toFixed(1)) });
     weights.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     console.log('更新后的体重数据:', weights); // 调试信息
@@ -99,12 +141,12 @@ function updateChart() {
 
 // 更新表格
 function updateTable() {
-    console.log('更新表格'); // 调试信息
+    console.log('更新表格'); // 试信息
     weightData.innerHTML = '';
     weights.forEach((w, index) => {
         const row = weightData.insertRow();
         row.insertCell(0).textContent = w.date;
-        row.insertCell(1).textContent = w.weight;
+        row.insertCell(1).textContent = w.weight.toFixed(1);
         const actionsCell = row.insertCell(2);
         actionsCell.innerHTML = `
             <button onclick="editWeight(${index})">编辑</button>
@@ -115,7 +157,7 @@ function updateTable() {
 
 // 编辑体重记录
 function editWeight(index) {
-    const newWeight = prompt('输入新的体重：', weights[index].weight);
+    const newWeight = prompt('输入新的体重（Kg）：', weights[index].weight.toFixed(1));
     if (newWeight !== null && !isNaN(newWeight)) {
         weights[index].weight = parseFloat(newWeight);
         updateChart();
@@ -145,6 +187,62 @@ weightForm.addEventListener('submit', addWeight);
 
 // 初始化
 setDefaultDate();
-console.log('初始化时的体重数据:', weights); // 调试信息
+console.log('初始化时的体重数:', weights); // 调试信息
 updateChart();
 updateTable();
+
+// 获取弹窗元素
+const privacyModal = document.getElementById("privacy-modal");
+const contactModal = document.getElementById("contact-modal");
+const privacyLink = document.getElementById("privacy-policy");
+const contactLink = document.getElementById("contact-us");
+const closeBtns = document.getElementsByClassName("close");
+
+// 点击隐私政策链接时显示弹窗
+privacyLink.onclick = function(event) {
+    event.preventDefault();
+    privacyModal.style.display = "block";
+}
+
+// 点击联系我们链接时显示弹窗
+contactLink.onclick = function(event) {
+    event.preventDefault();
+    contactModal.style.display = "block";
+}
+
+// 点击关闭按钮时隐藏弹窗
+for (let closeBtn of closeBtns) {
+    closeBtn.onclick = function() {
+        privacyModal.style.display = "none";
+        contactModal.style.display = "none";
+    }
+}
+
+// 点击弹窗外部时隐藏弹窗
+window.onclick = function(event) {
+    if (event.target == privacyModal) {
+        privacyModal.style.display = "none";
+    }
+    if (event.target == contactModal) {
+        contactModal.style.display = "none";
+    }
+}
+
+// 修改数据存储和加载函数
+function saveData() {
+    localStorage.setItem('weightData', JSON.stringify(weights));
+}
+
+function loadUserData() {
+    weights = JSON.parse(localStorage.getItem('weightData')) || [];
+    updateChart();
+    updateTable();
+}
+
+// 修改初始化函数
+function init() {
+    setDefaultDate();
+    loadUserData();
+}
+
+init();

@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>韩涛的体重记录</title>
+    <title>体重记录</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>韩涛的体重记录</h1>
+        <h1>体重记录</h1>
     </header>
 
     <main>
         <section id="weight-input">
-            <h2>记录体重</h2>
+            <h2>体重记录</h2>
             <form id="weight-form">
                 <input type="number" id="weight" step="0.1" min="0" max="500" placeholder="输入" required>
                 <input type="date" id="date" required>
                 <button type="submit" id="record-weight">记录体重</button>
             </form>
-            <p class="form-hint">请输入您的体重（单位：公斤，精确到小数点后一位），并选择日期。</p>
+            <p class="form-hint">请输入您的体重（单位：Kg，精确到小数点后一位）</p>
         </section>
 
         <section id="weight-chart">
@@ -35,7 +35,7 @@
                 <thead>
                     <tr>
                         <th>日期</th>
-                        <th>体重（公斤）</th>
+                        <th>体重（Kg）</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -47,12 +47,21 @@
     </main>
 
     <footer>
-        <p>&copy; 2023 我的体重追踪器。保留所有权利。</p>
         <nav>
-            <a href="#">隐私政策</a> | 
-            <a href="#">联系我们</a>
+            <a href="#" id="privacy-policy">隐私政策</a> | 
+            <a href="#" id="contact-us">联系我们</a>
         </nav>
     </footer>
+
+    <!-- 隐私政策弹窗 -->
+    <div id="privacy-modal" class="modal">
+        <!-- 隐私政策内容 -->
+    </div>
+
+    <!-- 联系我们弹窗 -->
+    <div id="contact-modal" class="modal">
+        <!-- 联系我们内容 -->
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
