@@ -14,19 +14,19 @@
 
     <main>
         <section id="weight-input">
-            <h2>体重记录</h2>
+            <h2>输入您的体重</h2>
             <form id="weight-form">
                 <input type="number" id="weight" step="0.1" min="0" max="500" placeholder="输入" required>
                 <input type="date" id="date" required>
-                <button type="submit" id="record-weight">记录体重</button>
+                <button type="submit" id="record-weight">确认</button>
             </form>
-            <p class="form-hint">请输入您的体重（单位：Kg，精确到小数点后一位）</p>
+            <p class="form-hint">请输入您的体重<br>（单位：Kg，精确到小数点后一位）</p>
         </section>
 
         <section id="weight-chart">
             <h2>体重变化趋势</h2>
             <canvas id="weightChart"></canvas>
-            <p class="chart-hint">此图表显示了您的体重变化趋势。点击数据点可查看详细信息。</p>
+            <p class="chart-hint">点击数据点可查看详细信息</p>
         </section>
 
         <section id="weight-table">
