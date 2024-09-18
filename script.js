@@ -35,16 +35,11 @@ const weightChart = new Chart(ctx, {
                 display: false
             },
             tooltip: {
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                titleFont: {
-                    size: 14,
-                    weight: 'bold'
-                },
-                bodyFont: {
-                    size: 14
-                },
-                padding: 10,
                 callbacks: {
+                    title: function(tooltipItems) {
+                        const date = new Date(tooltipItems[0].label);
+                        return `日期：${formatDate(date)}`;
+                    },
                     label: function(context) {
                         return `体重: ${context.parsed.y.toFixed(1)} Kg`;
                     }
@@ -88,7 +83,7 @@ const weightChart = new Chart(ctx, {
     }
 });
 
-// 获取DOM元素
+// 停止获取DOM元素
 const weightForm = document.getElementById('weight-form');
 const weightInput = document.getElementById('weight');
 const dateInput = document.getElementById('date');
@@ -247,3 +242,32 @@ function init() {
 }
 
 init();
+
+// 停止修改图表函数
+function createWeightChart(data) {
+    const ctx = document.getElementById('weightChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        // ... 其他图表配置 ...
+        options: {
+            // ... 其他选项 ...
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        const date = new Date(data.labels[tooltipItem.index]);
+                        const formattedDate = formatDate(date);
+                        const weight = data.datasets[0].data[tooltipItem.index];
+                        return `日期: ${formattedDate}, 体重: ${weight} Kg`;
+                    }
+                }
+            }
+        }
+    });
+}
+
+// 新增的日期格式化函数
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
