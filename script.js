@@ -55,12 +55,10 @@ const weightChart = new Chart(ctx, {
             y: {
                 beginAtZero: false,
                 title: {
-                    display: true,
-                    text: '体重（Kg）',
-                    font: {
-                        size: 14,
-                        weight: 'bold'
-                    }
+                    display: false // 删除纵坐标轴标题
+                },
+                grid: {
+                    display: false // 删除横向网格线
                 },
                 ticks: {
                     font: {
@@ -70,16 +68,19 @@ const weightChart = new Chart(ctx, {
             },
             x: {
                 title: {
-                    display: true,
-                    text: '日期',
-                    font: {
-                        size: 14,
-                        weight: 'bold'
-                    }
+                    display: false // 删除横坐标轴标题
+                },
+                grid: {
+                    display: false // 删除纵向网格线
                 },
                 ticks: {
                     font: {
                         size: 12
+                    },
+                    callback: function(value, index, values) {
+                        // 修改日期格式为 MM/DD
+                        const date = new Date(this.getLabelForValue(value));
+                        return (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
                     }
                 }
             }
@@ -134,7 +135,7 @@ function addWeight(event) {
 // 更新图表
 function updateChart() {
     console.log('更新图表'); // 调试信息
-    weightChart.data.labels = weights.map(w => w.date);
+    weightChart.data.labels = weights.map(w => new Date(w.date)); // 将日期字符串转换为 Date 对象
     weightChart.data.datasets[0].data = weights.map(w => w.weight);
     weightChart.update();
 }
