@@ -103,7 +103,7 @@ table {
 
 th, td {
     border: 1px solid #ddd;
-    padding: 8px; /* 减少内边距以缩小行高 */
+    padding: 8px; /* 减少内边距以缩小���高 */
     text-align: left;
 }
 
@@ -240,4 +240,36 @@ section {
         padding: 3px 6px; /* 进一步减小按钮大小 */
         font-size: 11px;
     }
+}
+
+#weight-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#weight-form input,
+#weight-form button {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#weight-form input[type="date"] {
+    background-color: white;
+    color: var(--text-color);
+    border: 1px solid #ddd;
+    padding: 12px;
+    font-size: 1em;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+#weight-form input[type="date"]::-webkit-calendar-picker-indicator {
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+
+#record-weight {
+    margin-top: 10px;
 }
