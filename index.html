@@ -14,8 +14,15 @@
 
     <main>
         <section id="weight-input">
-            <h2>输入您的体重</h2>
+            <h2>您的体重</h2>
             <form id="weight-form">
+                <div id="weight-ruler-container">
+                    <div id="weight-ruler"></div>
+                    <div id="weight-cursor"></div>
+                </div>
+                <div id="weight-display-container">
+                    当前选择体重：<span id="weight-display">0.0</span> Kg
+                </div>
                 <input type="number" id="weight" step="0.1" min="0" max="500" placeholder="输入体重 单位：Kg" required>
                 <input type="date" id="date" required>
                 <button type="submit" id="record-weight">确认</button>

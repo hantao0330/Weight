@@ -1,3 +1,19 @@
+let ruler;
+let weightInput;
+
+console.log('Script is running');
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
+    const rulerContainer = document.getElementById('weight-ruler-container');
+    ruler = document.getElementById('weight-ruler');
+    weightInput = document.getElementById('weight');
+    console.log('Ruler container:', rulerContainer);
+    console.log('Ruler:', ruler);
+    console.log('Weight input:', weightInput);
+    init();
+});
+
 // 初始化图表
 const ctx = document.getElementById('weightChart').getContext('2d');
 const weightChart = new Chart(ctx, {
@@ -38,7 +54,7 @@ const weightChart = new Chart(ctx, {
                 callbacks: {
                     title: function(tooltipItems) {
                         const date = new Date(tooltipItems[0].label);
-                        return `日期：${formatDate(date)}`;
+                        return `日期${formatDate(date)}`;
                     },
                     label: function(context) {
                         return `体重: ${context.parsed.y.toFixed(1)} Kg`;
@@ -85,7 +101,6 @@ const weightChart = new Chart(ctx, {
 
 // 停止获取DOM元素
 const weightForm = document.getElementById('weight-form');
-const weightInput = document.getElementById('weight');
 const dateInput = document.getElementById('date');
 const weightData = document.getElementById('weight-data');
 
@@ -101,7 +116,7 @@ function setDefaultDate() {
 // 从localStorage加载体重数据
 let weights = JSON.parse(localStorage.getItem('weightData')) || [];
 
-// 添加体重记录
+// 体重记录
 function addWeight(event) {
     event.preventDefault();
     const weight = parseFloat(weightInput.value);
@@ -110,7 +125,7 @@ function addWeight(event) {
     console.log('添加体重记录:', { date, weight }); // 调试信息
 
     if (isNaN(weight) || !date) {
-        alert('请输入有效的体重和日期');
+        alert('请输入有效的体重日期');
         return;
     }
 
@@ -122,6 +137,7 @@ function addWeight(event) {
     updateChart();
     updateTable();
     saveData();
+    updateRuler(weight); // 新增：更新体重选择尺
 
     weightInput.value = '';
     setDefaultDate(); // 重置日期为今天
@@ -153,7 +169,7 @@ function updateTable() {
 
 // 编辑体重记录
 function editWeight(index) {
-    const newWeight = prompt('输入新的体重（Kg）：', weights[index].weight.toFixed(1));
+    const newWeight = prompt('输入新的体重（Kg）', weights[index].weight.toFixed(1));
     if (newWeight !== null && !isNaN(newWeight)) {
         weights[index].weight = parseFloat(newWeight);
         updateChart();
@@ -162,9 +178,9 @@ function editWeight(index) {
     }
 }
 
-// 删除体重记录
+// 删除体重录
 function deleteWeight(index) {
-    if (confirm('确定要删除这条记录吗？')) {
+    if (confirm('确定要删除这条记录吗')) {
         weights.splice(index, 1);
         updateChart();
         updateTable();
@@ -206,7 +222,7 @@ contactLink.onclick = function(event) {
     contactModal.style.display = "block";
 }
 
-// 点击关闭按钮时隐藏弹窗
+// 点击关闭按时隐藏弹窗
 for (let closeBtn of closeBtns) {
     closeBtn.onclick = function() {
         privacyModal.style.display = "none";
@@ -239,29 +255,8 @@ function loadUserData() {
 function init() {
     setDefaultDate();
     loadUserData();
-}
-
-init();
-
-// 停止修改图表函数
-function createWeightChart(data) {
-    const ctx = document.getElementById('weightChart').getContext('2d');
-    const chart = new Chart(ctx, {
-        // ... 其他图表配置 ...
-        options: {
-            // ... 其他选项 ...
-            tooltips: {
-                callbacks: {
-                    label: function(tooltipItem, data) {
-                        const date = new Date(data.labels[tooltipItem.index]);
-                        const formattedDate = formatDate(date);
-                        const weight = data.datasets[0].data[tooltipItem.index];
-                        return `日期: ${formattedDate}, 体重: ${weight} Kg`;
-                    }
-                }
-            }
-        }
-    });
+    const latestWeight = weights.length > 0 ? weights[weights.length - 1].weight : 70;
+    initWeightRuler(latestWeight);
 }
 
 // 新增的日期格式化函数
@@ -271,3 +266,122 @@ function formatDate(date) {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+// 体重选择尺相关变量
+const rulerContainer = document.getElementById('weight-ruler-container');
+let isDragging = false;
+let startX, startScrollLeft;
+
+// 初始化体重选择尺
+function initWeightRuler(defaultWeight = 70) {
+    console.log('Initializing weight ruler');
+    if (!ruler) {
+        ruler = document.getElementById('weight-ruler');
+    }
+    if (!ruler) {
+        console.error('Weight ruler element not found');
+        return;
+    }
+    
+    const minWeight = 0;
+    const maxWeight = 150;
+    const step = 1;
+    const pixelsPerKg = 10;
+
+    ruler.innerHTML = '';
+
+    const totalWidth = (maxWeight - minWeight) * pixelsPerKg;
+    ruler.style.width = `${totalWidth}px`;
+
+    for (let i = minWeight; i <= maxWeight; i += step) {
+        const mark = document.createElement('div');
+        mark.classList.add('ruler-mark');
+        
+        if (i % 10 === 0) {
+            mark.classList.add('big');
+            const number = document.createElement('div');
+            number.classList.add('ruler-number');
+            number.textContent = i;
+            mark.appendChild(number);
+        } else {
+            mark.classList.add('small');
+        }
+        
+        mark.style.left = `${i * pixelsPerKg}px`;
+        ruler.appendChild(mark);
+    }
+
+    console.log('Ruler marks created:', ruler.children.length);
+
+    if (!document.getElementById('weight-cursor')) {
+        const cursor = document.createElement('div');
+        cursor.id = 'weight-cursor';
+        rulerContainer.appendChild(cursor);
+    }
+
+    updateRuler(defaultWeight); // 使用传入的默认体重
+
+    ruler.addEventListener('mousedown', startDragging);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', stopDragging);
+    document.addEventListener('mouseleave', stopDragging);
+
+    ruler.addEventListener('touchstart', startDragging);
+    document.addEventListener('touchmove', drag);
+    document.addEventListener('touchend', stopDragging);
+}
+
+function startDragging(e) {
+    isDragging = true;
+    startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+    const transform = ruler.style.transform;
+    const translateX = transform ? parseFloat(transform.replace('translateX(', '').replace('px)', '')) : 0;
+    const containerWidth = rulerContainer.clientWidth;
+    const pixelsPerKg = 10;
+    startScrollLeft = (containerWidth / 2 - translateX) / pixelsPerKg;
+    ruler.style.cursor = 'grabbing';
+    e.preventDefault();
+}
+
+function drag(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+    const walk = (startX - x) * 0.5; // 增加灵敏度
+    const containerWidth = rulerContainer.clientWidth;
+    const pixelsPerKg = 10;
+    const newPosition = Math.max(0, Math.min(150, startScrollLeft + walk / pixelsPerKg));
+    updateRuler(newPosition);
+    console.log('Dragging', newPosition);
+}
+
+function stopDragging() {
+    isDragging = false;
+    ruler.style.cursor = 'grab';
+}
+
+function updateWeight(position) {
+    const weight = Math.round(position * 10) / 10;
+    const formattedWeight = weight.toFixed(1);
+    weightInput.value = formattedWeight;
+    document.getElementById('weight-display').textContent = formattedWeight;
+    console.log('Updated weight:', formattedWeight, 'Position:', position);
+}
+
+function updateRuler(weight) {
+    const minWeight = 0;
+    const maxWeight = 150;
+    const position = Math.max(minWeight, Math.min(maxWeight, weight));
+    const containerWidth = rulerContainer.clientWidth;
+    const pixelsPerKg = 10;
+    const offset = containerWidth / 2;
+    const translateX = offset - position * pixelsPerKg;
+    ruler.style.transform = `translateX(${translateX}px)`;
+    updateWeight(position);
+    console.log('Ruler updated', { weight, position, translateX });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
+    init();
+});

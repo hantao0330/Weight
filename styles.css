@@ -103,7 +103,7 @@ table {
 
 th, td {
     border: 1px solid #ddd;
-    padding: 8px; /* 减少内边距以缩小���高 */
+    padding: 8px; /* 减少内边距以缩小 */
     text-align: left;
 }
 
@@ -195,7 +195,7 @@ footer a:hover {
 }
 
 /* 新增样式 */
-.weight-input-container,
+#weight-input-container,
 #weight-slider-container,
 #weight-slider,
 #weight-slider-value {
@@ -272,4 +272,78 @@ section {
 
 #record-weight {
     margin-top: 10px;
+}
+
+#weight-ruler-container {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    touch-action: pan-x;
+    border: 1px solid #ccc;
+    cursor: grab;
+}
+
+#weight-ruler {
+    position: absolute;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    transition: transform 0.1s ease-out;
+    user-select: none;
+    cursor: grab;
+    width: 1500px;
+    padding: 0 50%;
+    box-sizing: border-box;
+}
+
+.ruler-mark {
+    position: absolute;
+    width: 1px;
+    background-color: #ccc;
+    bottom: 0;
+    height: 20px; /* 小刻度的高度 */
+}
+
+.ruler-mark.big {
+    height: 40px; /* 大刻度的高度 */
+    width: 2px;
+    background-color: #999;
+}
+
+.ruler-number {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #666;
+    width: 40px;
+    text-align: center;
+}
+
+#weight-cursor {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #4682b4;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+#target-weight {
+    width: 60px;
+    text-align: center;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+#current-weight-container {
+    font-size: 18px;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #4682b4;
 }
