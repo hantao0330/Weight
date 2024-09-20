@@ -16,33 +16,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // 初始化图表
 const ctx = document.getElementById('weightChart').getContext('2d');
+let targetWeight = 70; // 默认目标体重
+
 const weightChart = new Chart(ctx, {
     type: 'line',
     data: {
         labels: [],
-        datasets: [{
-            label: '体重（Kg）',
-            data: [],
-            borderColor: 'rgb(70, 130, 180)',
-            backgroundColor: (context) => {
-                const chart = context.chart;
-                const {ctx, chartArea} = chart;
-                if (!chartArea) {
-                    return null;
-                }
-                const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
-                gradient.addColorStop(0, 'rgba(135, 206, 235, 0)');  // 天空蓝色，完全透明
-                gradient.addColorStop(1, 'rgba(135, 206, 235, 0.05)');  // 天空蓝色，5%不透明度
-                return gradient;
+        datasets: [
+            {
+                label: '体重（Kg）',
+                data: [],
+                borderColor: 'rgb(70, 130, 180)',
+                backgroundColor: (context) => {
+                    const chart = context.chart;
+                    const {ctx, chartArea} = chart;
+                    if (!chartArea) {
+                        return null;
+                    }
+                    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                    gradient.addColorStop(0, 'rgba(135, 206, 235, 0)');  // 天空蓝色，完全透明
+                    gradient.addColorStop(1, 'rgba(135, 206, 235, 0.05)');  // 天空蓝色，5%不透明度
+                    return gradient;
+                },
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: 'white',
+                pointBorderColor: 'rgb(70, 130, 180)',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7
             },
-            tension: 0.4,
-            fill: true,
-            pointBackgroundColor: 'white',
-            pointBorderColor: 'rgb(70, 130, 180)',
-            pointBorderWidth: 2,
-            pointRadius: 5,
-            pointHoverRadius: 7
-        }]
+            {
+                label: '目标体重',
+                data: [],
+                borderColor: 'rgba(255, 0, 0, 0.5)',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 0,
+                fill: false
+            }
+        ]
     },
     options: {
         responsive: true,
@@ -59,6 +72,33 @@ const weightChart = new Chart(ctx, {
                     label: function(context) {
                         return `体重: ${context.parsed.y.toFixed(1)} Kg`;
                     }
+                }
+            },
+            targetWeightLine: {
+                afterDraw: (chart) => {
+                    const {ctx, chartArea: {top, bottom, left, right, width}, scales: {x, y}} = chart;
+                    const labelText = '目标体重';
+                    const labelWidth = 80;
+                    const labelHeight = 20;
+                    const yPosition = y.getPixelForValue(targetWeight);
+
+                    ctx.save();
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                    ctx.fillRect(left + (width - labelWidth) / 2, yPosition - labelHeight / 2, labelWidth, labelHeight);
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.75)';
+                    ctx.font = '12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(labelText, left + width / 2, yPosition);
+                    ctx.restore();
+
+                    // 添加点击区域
+                    chart.targetWeightLabelArea = {
+                        left: left + (width - labelWidth) / 2,
+                        top: yPosition - labelHeight / 2,
+                        right: left + (width - labelWidth) / 2 + labelWidth,
+                        bottom: yPosition - labelHeight / 2 + labelHeight
+                    };
                 }
             }
         },
@@ -96,8 +136,97 @@ const weightChart = new Chart(ctx, {
                 }
             }
         }
+    },
+    plugins: [{
+        id: 'targetWeightLine',
+        afterDraw: (chart) => {
+            const {ctx, chartArea: {top, bottom, left, right, width}, scales: {x, y}} = chart;
+            const labelText = '目标体重';
+            const labelWidth = 80;
+            const labelHeight = 20;
+            const yPosition = y.getPixelForValue(targetWeight);
+
+            ctx.save();
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillRect(left + (width - labelWidth) / 2, yPosition - labelHeight / 2, labelWidth, labelHeight);
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.75)';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(labelText, left + width / 2, yPosition);
+            ctx.restore();
+
+            // 添加点击区域
+            chart.targetWeightLabelArea = {
+                left: left + (width - labelWidth) / 2,
+                top: yPosition - labelHeight / 2,
+                right: left + (width - labelWidth) / 2 + labelWidth,
+                bottom: yPosition - labelHeight / 2 + labelHeight
+            };
+        }
+    }]
+});
+
+// 添加点击事件监听器
+ctx.canvas.addEventListener('click', (event) => {
+    const rect = ctx.canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    if (weightChart.targetWeightLabelArea &&
+        x >= weightChart.targetWeightLabelArea.left &&
+        x <= weightChart.targetWeightLabelArea.right &&
+        y >= weightChart.targetWeightLabelArea.top &&
+        y <= weightChart.targetWeightLabelArea.bottom) {
+        showTargetWeightModal();
     }
 });
+
+function showTargetWeightModal() {
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.left = '0';
+    modal.style.top = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+
+    const content = document.createElement('div');
+    content.style.backgroundColor = 'white';
+    content.style.padding = '20px';
+    content.style.borderRadius = '5px';
+    content.innerHTML = `
+        <h3>设置目标体重</h3>
+        <input type="number" id="targetWeightInput" value="${targetWeight}" step="0.1" min="0" max="500">
+        <button id="confirmTargetWeight">确认</button>
+        <button id="cancelTargetWeight">取消</button>
+    `;
+
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+
+    document.getElementById('confirmTargetWeight').addEventListener('click', () => {
+        const newTargetWeight = parseFloat(document.getElementById('targetWeightInput').value);
+        if (!isNaN(newTargetWeight) && newTargetWeight > 0) {
+            targetWeight = newTargetWeight;
+            updateTargetWeight();
+            document.body.removeChild(modal);
+        }
+    });
+
+    document.getElementById('cancelTargetWeight').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+}
+
+function updateTargetWeight() {
+    localStorage.setItem('targetWeight', targetWeight);
+    weightChart.data.datasets[1].data = weightChart.data.labels.map(() => targetWeight);
+    weightChart.update();
+}
 
 // 停止获取DOM元素
 const weightForm = document.getElementById('weight-form');
@@ -130,14 +259,14 @@ function addWeight(event) {
     }
 
     weights.push({ date, weight: parseFloat(weight.toFixed(1)) });
-    weights.sort((a, b) => new Date(a.date) - new Date(b.date));
+    weights.sort((a, b) => new Date(b.date) - new Date(a.date)); // 修改这里，改为降序排序
 
     console.log('更新后的体重数据:', weights); // 调试信息
 
     updateChart();
     updateTable();
     saveData();
-    updateRuler(weight); // 新增：更新体重选择尺
+    updateRuler(weight); // ���增：更新体重选择尺
 
     weightInput.value = '';
     setDefaultDate(); // 重置日期为今天
@@ -146,25 +275,68 @@ function addWeight(event) {
 // 更新图表
 function updateChart() {
     console.log('更新图表'); // 调试信息
-    weightChart.data.labels = weights.map(w => new Date(w.date)); // 将日期字符串转换为 Date 对象
-    weightChart.data.datasets[0].data = weights.map(w => w.weight);
+    const sortedWeights = [...weights].sort((a, b) => new Date(a.date) - new Date(b.date)); // 为图表创建一个升序排序的副本
+    const dates = sortedWeights.map(w => new Date(w.date));
+    weightChart.data.labels = dates;
+    weightChart.data.datasets[0].data = sortedWeights.map(w => w.weight);
+    
+    // 添加目标体重线
+    weightChart.data.datasets[1].data = dates.map(() => targetWeight);
+    
     weightChart.update();
 }
 
-// 更新表格
+// 在文件顶部添加分页相关的变量
+let currentPage = 1;
+const recordsPerPage = 10;
+
+// 修改 updateTable 函数
 function updateTable() {
-    console.log('更新表格'); // 试信息
+    console.log('更新表格');
     weightData.innerHTML = '';
-    weights.forEach((w, index) => {
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    const pageRecords = weights.slice(startIndex, endIndex); // weights 已经是降序排列的
+
+    pageRecords.forEach((w, index) => {
         const row = weightData.insertRow();
         row.insertCell(0).textContent = w.date;
         row.insertCell(1).textContent = w.weight.toFixed(1);
         const actionsCell = row.insertCell(2);
         actionsCell.innerHTML = `
-            <button onclick="editWeight(${index})">编辑</button>
-            <button onclick="deleteWeight(${index})">删除</button>
+            <button onclick="editWeight(${startIndex + index})">编辑</button>
+            <button onclick="deleteWeight(${startIndex + index})">删除</button>
         `;
     });
+
+    updatePagination();
+}
+
+// 添加 updatePagination 函数
+function updatePagination() {
+    const totalPages = Math.ceil(weights.length / recordsPerPage);
+    let paginationElement = document.getElementById('pagination');
+    
+    if (!paginationElement) {
+        paginationElement = document.createElement('div');
+        paginationElement.id = 'pagination';
+        weightData.parentNode.insertBefore(paginationElement, weightData.nextSibling);
+    }
+    
+    paginationElement.innerHTML = `
+        <button onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>
+        <span>${currentPage} / ${totalPages}</span>
+        <button onclick="changePage(1)" ${currentPage === totalPages || totalPages === 0 ? 'disabled' : ''}>下一页</button>
+    `;
+}
+
+// 添加 changePage 函数
+function changePage(direction) {
+    const totalPages = Math.ceil(weights.length / recordsPerPage);
+    currentPage += direction;
+    if (currentPage < 1) currentPage = 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    updateTable();
 }
 
 // 编辑体重记录
@@ -178,11 +350,12 @@ function editWeight(index) {
     }
 }
 
-// 删除体重录
+// 修改 deleteWeight 函数
 function deleteWeight(index) {
     if (confirm('确定要删除这条记录吗')) {
         weights.splice(index, 1);
         updateChart();
+        currentPage = 1; // 重置到第一页
         updateTable();
         saveData();
     }
@@ -198,10 +371,14 @@ function saveData() {
 weightForm.addEventListener('submit', addWeight);
 
 // 初始化
-setDefaultDate();
-console.log('初始化时的体重数:', weights); // 调试信息
-updateChart();
-updateTable();
+function init() {
+    setDefaultDate();
+    loadUserData();
+    targetWeight = parseFloat(localStorage.getItem('targetWeight')) || 70;
+    const latestWeight = weights.length > 0 ? weights[weights.length - 1].weight : 70;
+    initWeightRuler(latestWeight);
+    updateTargetWeight();
+}
 
 // 获取弹窗元素
 const privacyModal = document.getElementById("privacy-modal");
@@ -247,16 +424,9 @@ function saveData() {
 
 function loadUserData() {
     weights = JSON.parse(localStorage.getItem('weightData')) || [];
+    weights.sort((a, b) => new Date(b.date) - new Date(a.date)); // 确保加载时也是降序排序
     updateChart();
     updateTable();
-}
-
-// 修改初始化函数
-function init() {
-    setDefaultDate();
-    loadUserData();
-    const latestWeight = weights.length > 0 ? weights[weights.length - 1].weight : 70;
-    initWeightRuler(latestWeight);
 }
 
 // 新增的日期格式化函数

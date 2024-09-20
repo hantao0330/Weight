@@ -194,28 +194,6 @@ footer a:hover {
     cursor: pointer;
 }
 
-/* 新增样式 */
-#weight-input-container,
-#weight-slider-container,
-#weight-slider,
-#weight-slider-value {
-    /* 删除这些选择器及其相关样式 */
-}
-
-/* 其他样式保持不变 */
-
-/* 在现有样式的基础上添加以下内容 */
-
-#user-nav,
-#username-display,
-#auth-forms,
-#auth-forms input,
-#auth-forms button,
-#auth-forms p,
-#auth-forms a {
-    /* 删除这些选择器及其相关样式 */
-}
-
 /* 其他样式保持不变 */
 
 section {
@@ -346,4 +324,47 @@ section {
     margin-top: 10px;
     font-weight: bold;
     color: #4682b4;
+}
+
+#weight-data {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* 新增一个容器来包裹表格和分页控件 */
+.table-container {
+    width: 100%;
+    overflow-x: auto; /* 在小屏幕上允许水平滚动 */
+    margin-bottom: 60px; /* 为分页控件留出空间 */
+    position: relative; /* 为绝对定位的分页控件提供参考 */
+}
+
+#pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+
+#pagination button {
+    margin: 0 10px;
+    padding: 5px 10px;
+    background-color: #4682b4;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+#pagination button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#pagination span {
+    margin: 0 10px;
 }
