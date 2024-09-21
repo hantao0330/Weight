@@ -24,7 +24,7 @@ const weightChart = new Chart(ctx, {
         labels: [],
         datasets: [
             {
-                label: '体重（Kg）',
+                label: '体重（kg）',
                 data: [],
                 borderColor: 'rgb(70, 130, 180)',
                 backgroundColor: (context) => {
@@ -70,7 +70,7 @@ const weightChart = new Chart(ctx, {
                         return `日期${formatDate(date)}`;
                     },
                     label: function(context) {
-                        return `体重: ${context.parsed.y.toFixed(1)} Kg`;
+                        return `体重: ${context.parsed.y.toFixed(1)} kg`;
                     }
                 }
             },
@@ -254,7 +254,13 @@ function addWeight(event) {
     console.log('添加体重记录:', { date, weight }); // 调试信息
 
     if (isNaN(weight) || !date) {
-        alert('请输入有效的体重日期');
+        alert('请输入有效的体重和日期');
+        return;
+    }
+
+    // 添加新的验证逻辑
+    if (weight < 30 || weight > 150) {
+        alert('请检查并输入正确的体重');
         return;
     }
 
@@ -266,7 +272,7 @@ function addWeight(event) {
     updateChart();
     updateTable();
     saveData();
-    updateRuler(weight); // ���增：更新体重选择尺
+    updateRuler(weight); // 新增：更新体重选择尺
 
     weightInput.value = '';
     setDefaultDate(); // 重置日期为今天
@@ -301,7 +307,7 @@ function updateTable() {
     pageRecords.forEach((w, index) => {
         const row = weightData.insertRow();
         row.insertCell(0).textContent = w.date;
-        row.insertCell(1).textContent = w.weight.toFixed(1);
+        row.insertCell(1).textContent = w.weight.toFixed(1); // 移除 ' kg'
         const actionsCell = row.insertCell(2);
         actionsCell.innerHTML = `
             <button onclick="editWeight(${startIndex + index})">编辑</button>
@@ -341,7 +347,7 @@ function changePage(direction) {
 
 // 编辑体重记录
 function editWeight(index) {
-    const newWeight = prompt('输入新的体重（Kg）', weights[index].weight.toFixed(1));
+    const newWeight = prompt('输入新的体重（kg）', weights[index].weight.toFixed(1));
     if (newWeight !== null && !isNaN(newWeight)) {
         weights[index].weight = parseFloat(newWeight);
         updateChart();
@@ -407,7 +413,7 @@ for (let closeBtn of closeBtns) {
     }
 }
 
-// 点击弹窗外部时隐藏弹窗
+// 点击弹窗外时隐藏弹窗
 window.onclick = function(event) {
     if (event.target == privacyModal) {
         privacyModal.style.display = "none";
@@ -437,7 +443,7 @@ function formatDate(date) {
     return `${year}-${month}-${day}`;
 }
 
-// 体重选择尺相关变量
+// 体重选择尺相变量
 const rulerContainer = document.getElementById('weight-ruler-container');
 let isDragging = false;
 let startX, startScrollLeft;

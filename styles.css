@@ -37,8 +37,7 @@ header {
 }
 
 header h1 {
-    /* 将 'FZShaoEr' 替换为微软雅黑 */
-    font-family: "Microsoft YaHei", 'Comic Neue', cursive;
+    font-family: "Microsoft YaHei", 'Roboto', Arial, sans-serif;
     font-size: 2.5em;
     color: white;
     margin: 0;
@@ -241,6 +240,7 @@ section {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
+    font-family: "Microsoft YaHei", 'Roboto', Arial, sans-serif; /* 添加这一行 */
 }
 
 #weight-form input[type="date"]::-webkit-calendar-picker-indicator {
@@ -257,7 +257,7 @@ section {
     width: 100%;
     height: 100px;
     overflow: hidden;
-    margin-bottom: 20px;
+    margin-bottom: 10px;  /* 将下边距从 20px 减少到 10px */
     touch-action: pan-x;
     border: 1px solid #ccc;
     cursor: grab;
@@ -367,4 +367,20 @@ section {
 
 #pagination span {
     margin: 0 10px;
+}
+
+#weight-display {
+    font-size: 2em;  /* 增大数字的大小 */
+    font-weight: bold;  /* 保持加粗 */
+    color: var(--primary-color);  /* 保持主题蓝色 */
+    display: inline-block;  /* 使数字和单位在同一行 */
+    margin-right: 5px;  /* 在数字和单位之间一些间距 */
+}
+
+#weight-display-container {
+    text-align: center;  /* 保持文本居中 */
+    margin: 10px 0;  /* 保持上下间距 */
+    font-size: 1.2em;  /* 保持整体字体大小 */
+    position: relative;  /* 添加这行 */
+    left: 10px;  /* 将左偏移从 20px 减少到 10px */
 }
