@@ -30,10 +30,11 @@ body {
 header {
     background-color: var(--primary-color);
     color: white;
-    padding: 20px;
+    padding: 15px; /* 保持减少的顶部和底部的内边距 */
     text-align: center;
     border-radius: 10px 10px 0 0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    /* 移除了 margin-bottom: 10px; */
 }
 
 header h1 {
@@ -41,13 +42,13 @@ header h1 {
     font-size: 2.5em;
     color: white;
     margin: 0;
-    padding: 10px 0;
+    padding: 5px 0; /* 减少上下内边距 */
     text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
 }
 
 main {
     background-color: white;
-    padding: 30px;
+    padding: 20px; /* 减少main的内边距 */
     border-radius: 0 0 10px 10px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
@@ -55,9 +56,9 @@ main {
 h2 {
     color: var(--primary-color);
     border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 10px;
-    margin-top: 30px;
-    margin-bottom: 20px; /* 添加这一行 */
+    padding-bottom: 5px; /* 减少底部内边距 */
+    margin-top: 15px; /* 减少顶部外边距 */
+    margin-bottom: 15px; /* 减少底部外边距 */
 }
 
 input, button {
