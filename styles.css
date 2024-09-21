@@ -222,13 +222,14 @@ section {
 #weight-form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 5px;  /* 将表单元素之间的间距从 10px 减少到 5px */
 }
 
 #weight-form input,
 #weight-form button {
     width: 100%;
     box-sizing: border-box;
+    margin: 5px 0;  /* 将输入框和按钮的上下边距从 10px 减少到 5px */
 }
 
 #weight-form input[type="date"] {
@@ -249,7 +250,7 @@ section {
 }
 
 #record-weight {
-    margin-top: 10px;
+    margin-top: 5px;  /* 将确认按钮的上边距从 10px 减少到 5px */
 }
 
 #weight-ruler-container {
@@ -257,7 +258,7 @@ section {
     width: 100%;
     height: 100px;
     overflow: hidden;
-    margin-bottom: 10px;  /* 将下边距从 20px 减少到 10px */
+    margin-bottom: 5px;  /* 将下边距从 10px 减少到 5px */
     touch-action: pan-x;
     border: 1px solid #ccc;
     cursor: grab;
@@ -379,7 +380,7 @@ section {
 
 #weight-display-container {
     text-align: center;  /* 保持文本居中 */
-    margin: 10px 0;  /* 保持上下间距 */
+    margin: 5px 0;  /* 保持上下间距 */
     font-size: 1.2em;  /* 保持整体字体大小 */
     position: relative;  /* 添加这行 */
     left: 10px;  /* 将左偏移从 20px 减少到 10px */
